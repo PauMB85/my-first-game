@@ -4,46 +4,63 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController sharedInstance;
 
     public float jumpForce = 6.0f;
     public float runningSpeed = 1.0f;
     private Rigidbody2D rigidBody;
     public LayerMask groundLayerMask;
     public Animator animator;
-    
+
+    private Vector3 startPosition;
 
 
     void Awake() {
         rigidBody = GetComponent<Rigidbody2D> ();
+        sharedInstance = this;
+        startPosition = this.transform.position;
+        animator.SetBool("isAlive", true);
+    }
+
+    void Start() {
+        
     }
 
     // Start is called before the first frame update
-    void Start() {
+    public void StartGame() {
         animator.SetBool("isAlive", true);
+        this.transform.position = startPosition;
+        rigidBody.velocity = new Vector2(0, 0);
     }
 
     // Update is called once per frame
     void Update()
     {
         //Si se pulsa el botón izq del ratón se lanza la acción de 
-        if(Input.GetMouseButtonDown(0)) {
-            Debug.Log("Botón izquierdo del ratón pulsado !");
-            Jump();
+        if(GameManager.sharedInstance.currentGameState == GameState.inTheGame){ 
+
+            if(Input.GetMouseButtonDown(0)) {
+                Debug.Log("Botón izquierdo del ratón pulsado !");
+                Jump();
+            }
+
+            //Actualizamos el valor de isGrounded
+            animator.SetBool("isGrounded",IsOnTheFloor());
         }
 
-        if(Input.GetMouseButtonDown(1)) {
-            Debug.Log("Botón derecho del ratón pulsado !");
-        }
-
-        //Actualizamos el valor de isGrounded
-        animator.SetBool("isGrounded",IsOnTheFloor());
+        
     }
 
     // Unity llama a este métodad cada intervalo de tiempo fijo, es ideal donde añadir fuerzas constantes a la fisica, velocidad... movimientos..
     void FixedUpdate() {
-        if( rigidBody.velocity.x < runningSpeed ) {
-            rigidBody.velocity = new Vector2(runningSpeed, rigidBody.velocity.y);
+        
+        if(GameManager.sharedInstance.currentGameState == GameState.inTheGame){
+            if( rigidBody.velocity.x < runningSpeed ) {
+                rigidBody.velocity = new Vector2(runningSpeed, rigidBody.velocity.y);
+            }
         }
+        
+        
     }
 
     /**
@@ -70,5 +87,10 @@ public class PlayerController : MonoBehaviour
         }
 
         return isOnTheFloor;
+    }
+
+    public void KillPlayer () {
+        GameManager.sharedInstance.GameOver();
+        animator.SetBool("isAlive", false);
     }
 }
