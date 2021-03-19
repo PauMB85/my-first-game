@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour
 
     public static GameManager sharedInstance;
 
+    public Canvas menuCanvas;
+    public Canvas gameCanvas;
+    public Canvas gameOverCanvas;
 
     void Awake (){
         sharedInstance = this;
@@ -23,17 +26,20 @@ public class GameManager : MonoBehaviour
     
     void Start() {
         currentGameState = GameState.menu;
+        showMenuCanvas();
+        //LevelGenerator.sharedInstance.GenerateInitialBlocks();
     }
 
     void Update () {
-        if(currentGameState != GameState.inTheGame && Input.GetButtonDown("s") ){
+        /*if(currentGameState != GameState.inTheGame ){
             StartGame();
-        }
+        }*/
     }
 
     // Use this for start the game
     public void StartGame()
     {
+        
         ChangeState(GameState.inTheGame);
         PlayerController.sharedInstance.StartGame();
     }
@@ -41,6 +47,7 @@ public class GameManager : MonoBehaviour
     // called then the player dies
     public void GameOver() {
         ChangeState(GameState.gameOver);
+        LevelGenerator.sharedInstance.RestoreGame();
     }
 
     // called when the player wants finish the game and back to the main menu
@@ -53,12 +60,24 @@ public class GameManager : MonoBehaviour
 
         if(newGameState == GameState.menu){
             //in this case we show the menu
+            showMenuCanvas();
         } else if(newGameState == GameState.inTheGame) {
             // the scene of unity show the game
+            menuCanvas.enabled = false;
+            gameCanvas.enabled = true;
+            gameOverCanvas.enabled = false;
         } else if(newGameState == GameState.gameOver) {
             // the scene to show is the end of game --> GAME OVER
+            menuCanvas.enabled = false;
+            gameCanvas.enabled = false;
+            gameOverCanvas.enabled = true;
         }
         currentGameState = newGameState;
     }
 
+    private void showMenuCanvas() {
+        menuCanvas.enabled = true;
+        gameCanvas.enabled = false;
+        gameOverCanvas.enabled = false;
+    }
 }

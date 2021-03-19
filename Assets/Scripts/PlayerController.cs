@@ -83,9 +83,10 @@ public class PlayerController : MonoBehaviour
         //Raycast se comprueba si el objeto(conejo) esta tocando el suelo.
         //Se lanza un rayo(raycast) desde la posición del conejo(trasnform.position) hacia abajo(Vector2.down) de longitud 1.0 y comprueba si toca el suelo(groundLayerMask.value)
         if(Physics2D.Raycast(this.transform.position, Vector2.down, 1.0f, groundLayerMask.value)) {
+            Debug.Log("On the floooor");
             isOnTheFloor = true;
         }
-
+        Debug.Log("Estamos en el suelo " + isOnTheFloor);
         return isOnTheFloor;
     }
 
