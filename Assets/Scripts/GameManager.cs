@@ -20,13 +20,15 @@ public class GameManager : MonoBehaviour
     public Canvas gameCanvas;
     public Canvas gameOverCanvas;
 
+    public int collectedCoins = 0;
+
     void Awake (){
         sharedInstance = this;
     }    
     
     void Start() {
         currentGameState = GameState.menu;
-        showMenuCanvas();
+        ShowMenuCanvas();
         //LevelGenerator.sharedInstance.GenerateInitialBlocks();
     }
 
@@ -42,6 +44,7 @@ public class GameManager : MonoBehaviour
         
         ChangeState(GameState.inTheGame);
         PlayerController.sharedInstance.StartGame();
+        ViewInGame.sharedInstace.UpdateHighScoreLabel();
     }
 
     // called then the player dies
@@ -60,7 +63,7 @@ public class GameManager : MonoBehaviour
 
         if(newGameState == GameState.menu){
             //in this case we show the menu
-            showMenuCanvas();
+            ShowMenuCanvas();
         } else if(newGameState == GameState.inTheGame) {
             // the scene of unity show the game
             menuCanvas.enabled = false;
@@ -75,9 +78,15 @@ public class GameManager : MonoBehaviour
         currentGameState = newGameState;
     }
 
-    private void showMenuCanvas() {
+    void ShowMenuCanvas() {
         menuCanvas.enabled = true;
         gameCanvas.enabled = false;
         gameOverCanvas.enabled = false;
+    }
+
+    public void CollectCoin()
+    {
+        collectedCoins++;
+        ViewInGame.sharedInstace.UpdateCoinsLabel();
     }
 }

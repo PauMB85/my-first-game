@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 startPosition;
 
+    private string highScoreKey = "highscore";
+
 
     void Awake() {
         rigidBody = GetComponent<Rigidbody2D> ();
@@ -90,8 +92,25 @@ public class PlayerController : MonoBehaviour
         return isOnTheFloor;
     }
 
+    /**
+     * Metodo que se controla la muerte del conejo.
+     * Cambio el estado de isAlice a false y pasa el estado del juego a Game Over
+     */
     public void KillPlayer () {
         GameManager.sharedInstance.GameOver();
         animator.SetBool("isAlive", false);
+
+        if (PlayerPrefs.GetFloat(highScoreKey, 0)< this.GetDistance())
+        {
+            PlayerPrefs.SetFloat(highScoreKey, this.GetDistance());
+        }
+    }
+
+
+    public float GetDistance()
+    {
+        float distanceTravelled = Vector2.Distance(new Vector2(startPosition.x, 0), new Vector2(this.transform.position.x, 0));
+
+        return distanceTravelled;
     }
 }
